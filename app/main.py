@@ -64,18 +64,28 @@ def ping() -> str:
     return "pong"
 
 if __name__ == "__main__":
-    # CRITICAL: Railway requires these exact settings
-    port = int(os.environ.get("PORT", 8000))
+    print("=== FastMCP Server Starting ===")
     
-    print(f"Starting FastMCP server on 0.0.0.0:{port}")
+    # Check environment
+    port = int(os.environ.get("PORT", 8000))
+    print(f"PORT from environment: {port}")
+    print(f"SHOP_URL: {os.getenv('SHOP_URL')}")
     
     try:
+        print("Initializing Shopify...")
+        shopify_initialized = init_shopify()
+        print(f"Shopify initialized: {shopify_initialized}")
+        
+        print(f"Starting server on 0.0.0.0:{port}")
         mcp.run(
             transport="streamable-http", 
             port=port,
-            host="0.0.0.0",  # MUST be 0.0.0.0 for Railway
+            host="0.0.0.0",
             middleware=[cors_middleware]
         )
     except Exception as e:
-        print(f"Server failed to start: {e}")
+        print(f"FATAL ERROR: {e}")
+        import traceback
+        traceback.print_exc()
         raise
+
