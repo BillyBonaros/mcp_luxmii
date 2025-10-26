@@ -1,1 +1,1 @@
-web: uv run python main.py
+web: uv run python app/main.py
