@@ -7,6 +7,7 @@ from starlette.middleware.cors import CORSMiddleware
 import requests
 from requests.exceptions import RequestException
 from tools import *
+from fastmcp.resources import TextResource
 
 # Automatically finds .env in current directory or parent directories
 load_dotenv(find_dotenv())
@@ -48,7 +49,7 @@ mcp = FastMCP("shopify-mcp")
 
 @mcp.tool()
 def get_order_details_by_order_id(order_id: str):
-    """Get order details by order id (e.g., '#12345')."""
+    """Get order details by order id (order name) (e.g., '#12345')."""
     try:
         oid = str(order_id)
         if not oid.startswith("#"):
@@ -97,7 +98,8 @@ def search_orders_by_email(email:str):
 def get_order_eligibility(order_id):
     """
     MCP Tool Function: Get return eligibility for all items in an order
-    
+    You can get the order ID from the shopify data. Except if its provided by the user.
+    Its not the order name like #12345. It can reach up to 20 characters.
     Args:
         order_id (str): The Shopify order ID
         
@@ -214,6 +216,16 @@ def get_order_eligibility(order_id):
 
 
 
+# Add the guidelines as a resource
+guidelines_resource = TextResource(
+    uri="guidelines://email-response",
+    name="Email Response Guidelines",
+    text=EMAIL_GUIDELINES,
+    description="Comprehensive guidelines for writing customer email responses",
+    tags={"guidelines", "email", "customer-service"}
+)
+
+mcp.add_resource(guidelines_resource)
 
 
 
