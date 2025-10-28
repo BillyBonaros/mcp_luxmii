@@ -97,14 +97,21 @@ def search_orders_by_email(email:str):
 @mcp.tool()
 def get_order_eligibility(order_id):
     """
-    MCP Tool Function: Get return eligibility for all items in an order
-    You can get the order ID from the shopify data. Except if its provided by the user.
-    Its not the order name like #12345. It can reach up to 20 characters.
-    Args:
-        order_id (str): The Shopify order ID
-        
+    Retrieves the return eligibility status for every item in a specific Shopify order.
+    You can obtain the Shopify Order ID (a unique 10–20 character identifier, not the order name like #12345) using the companion tool get_order_details_by_order_id, which accepts the order name as input.
+    Alternatively, the Order ID may be provided directly by the user
+    
+    Arguments:
+    order_id (str) – The Shopify Order ID used to identify the order.
+
     Returns:
-        dict: Contains order info and eligibility details for each item
+    dict – A structured response containing:
+
+    General order information (order ID, customer details, total amount, etc.)
+    Eligibility details for each item in the order, including:
+    Return status (eligible/ineligible)
+    Available return options (store credit, refund, exchange, etc.)
+    Any applicable conditions or restrictions
     """
     try:
         # Get all required data
@@ -216,23 +223,28 @@ def get_order_eligibility(order_id):
 
 
 
-# Add the guidelines as a resource
-guidelines_resource = TextResource(
-    uri="guidelines://email-response",
-    name="Email Response Guidelines",
-    text=EMAIL_GUIDELINES,
-    description="Comprehensive guidelines for writing customer email responses",
-    tags={"guidelines", "email", "customer-service"}
-)
+# # Add the guidelines as a resource
+# guidelines_resource = TextResource(
+#     uri="guidelines://email-response",
+#     name="Email Response Guidelines",
+#     text=EMAIL_GUIDELINES,
+#     description="Comprehensive guidelines for writing customer email responses",
+#     tags={"guidelines", "email", "customer-service"}
+# )
 
-mcp.add_resource(guidelines_resource)
-
-
+# mcp.add_resource(guidelines_resource)
 
 
 
 
+@mcp.tool()
+def get_email_response_guidelines():
+    """
+    Use this tool to provide you email response guidelines. eg how to write email responses for our braand
+    
+    """
 
+    return(EMAIL_GUIDELINES)
 
 
 
