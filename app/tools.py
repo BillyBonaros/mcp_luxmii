@@ -161,7 +161,7 @@ def process_order_items(order, statuses, order_count):
 
 
 
-            lookup = {item['name']: item['value'] for item in i['properties']}
+            lookup = {j['name']: j['value'] for j in item['properties']}
 
             original_price = float(lookup.get('_Original_Price', 0))
             discount_amount = float(lookup.get('_Discount_Amount', 0))
