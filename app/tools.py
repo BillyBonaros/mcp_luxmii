@@ -160,15 +160,15 @@ def process_order_items(order, statuses, order_count):
             line_net= str(line_net)+' '+currency
 
 
-            lookup = {j['name']: j['value'] for j in item['properties']}
 
-            original_price = float(lookup.get('_Original_Price', None))
-            discount_amount = float(lookup.get('_Discount_Amount', None))
-            discount_percentage = lookup.get('_Discount_Percentage', None)
+            lookup = {item['name']: item['value'] for item in i['properties']}
+
+            original_price = float(lookup.get('_Original_Price', 0))
+            discount_amount = float(lookup.get('_Discount_Amount', 0))
+            discount_percentage = lookup.get('_Discount_Percentage', 0)
 
 
-
-            if discount_amount:
+            if discount_amount!=0:
                 total_discount_amount=float(discount_amount)
                 discount_percentage=int(discount_percentage[:-1])
                 has_discount = True
