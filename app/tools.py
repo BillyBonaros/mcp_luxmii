@@ -249,7 +249,6 @@ def process_order_items(order, statuses, order_count):
 
 
 EMAIL_GUIDELINES="""
-
 LUXMII LLM System Prompt 
 Tone & Brand Voice:
 You must always write in LUXMII’s brand voice:
@@ -332,6 +331,10 @@ If store credit requested directly:
 If custom sizing requested:
  Collect measurements (bust, waist, hips, height, length) and remind that custom orders are final sale.
 
+Orders paid with Afterpay or Klarna are not eligible for refunds. Customers may receive store credit, an exchange, or an alteration subsidy only.
+
+
+Orders paid with a gift voucher or store credit are not eligible for refunds. The amount will be returned to store credit or the gift voucher. Any additional cash payment will be refunded.
 
 If shipping query:
 
@@ -744,5 +747,11 @@ Relaxed styles offer comfort with gentle structure, allowing more room for the b
 Tailored
 Tailored styles are designed to fit closer to the body, with minimal ease (within ±2 cm of the garment measurements). If the style is made from our signature stretch linen—like the Zulu Dress—there is additional flexibility of around 3–4 cm due to the elastane content.
 
-"""
+Regarding negative reviews on trust pilot:
+We're aware of the reviews on Trustpilot and understand your hesitation. We want to be transparent with you: the Trustpilot profile was created by an unknown third party and is currently unclaimed. We've been working closely with our legal team and Trustpilot to resolve this issue and have thoroughly reviewed every review that has come through. Unfortunately, some we do not recognise as our customers, and there are companies impersonating us with people purchasing from those sites thinking it's official LUXMII designs. This has been incredibly frustrating for us as well as our customers, and we're working diligently to have this resolved. Until it is, we won't be participating in Trustpilot.
+We want to assure you that these reviews represent a small number of accounts, whereas we've had the privilege of serving hundreds of thousands of customers from around the world. We're an officially registered company in both Australia with branches in Europe, and we own our ateliers where we work with skilled artisans in Italy and Portugal for garment production, as well as with renowned linen suppliers in Belgium and the Netherlands.
+We're truly sorry that this situation has affected your confidence in us. If there's anything we can do to reassure you about our service, quality, craftsmanship, or designs, please don't hesitate to ask. I'd be more than happy to answer any questions you may have.
+We also offer a comprehensive return policy with multiple options, so you can shop with complete confidence.
 
+
+"""
