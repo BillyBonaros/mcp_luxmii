@@ -99,42 +99,83 @@ def get_days_held(delivered_at):
     now = datetime.now(timezone.utc).astimezone(delivered_dt.tzinfo)
     return (now - delivered_dt).days
 
-def get_eligibility(is_final_sale, days_held, discount_pct, has_discount, order_count):
+
+def get_eligibility(is_final_sale, days_held, discount_pct, has_discount, order_count, payment_method, country_code):
+
     if is_final_sale:
-        return "FINAL SALE", ["Cannot be returned"]
+        return (
+            "FINAL_SALE",
+            "Item was marked as final sale at time of purchase",
+            ["Cannot be returned"]
+        )
+
     if days_held is not None and days_held > 30:
-        return "EXPIRED", ["Store credit (-$20 USD label)"]
+        return (
+            "EXPIRED",
+            "Item was delivered more than 30 days ago",
+            ["Store credit (customer arranges their own return)"]
+        )
+
+    if payment_method != 'Normal':
+        return (
+            "CREDIT_ONLY_PAYMENT_METHOD",
+            "Item was purchased using a credit-only payment method (BNPL, store credit, or gift voucher)",
+            ["Store credit (customer arranges their own return)"]
+        )
+
     if discount_pct > 20:
-        return "More than 20% off", ["Store credit (-$20 USD label)",
-                                      "Item exchange (-$20 USD label)",
-                                      "Alteration subsidy: 10% refund + $20 USD gift voucher"]
-    if order_count == 1:
-        return "ELIGIBLE", [
-            "120% store credit + free returns",
-            "Item exchange (-$20 USD label)",
-            "Refund (-$30 USD label)",
-            "Alteration subsidy: 10% refund + $20 USD gift voucher"
+        return (
+            "DISCOUNT_GT_20",
+            "Item was discounted more than 20% at time of purchase",
+            [
+                "Store credit (customer arranges their own return)",
+                "Item exchange (customer arranges their own return + free outbound shipping)",
+                "10% refund + $20 gift voucher"
+            ]
+        )
+
+    if has_discount:
+        return (
+            "DISCOUNT_LE_20",
+            "Item was discounted 20% or less at time of purchase",
+            [
+                "Store credit (customer arranges their own return)",
+                "Item exchange (customer arranges their own return + free outbound shipping)",
+                "Alteration subsidy: 10% refund + $20 gift voucher",
+                "Refund (customer arranges their own return)"
+            ]
+        )
+
+    return (
+        "FULL_PRICE",
+        "Item was purchased at full price with no discount applied",
+        [
+            "120% store credit (customer arranges their own return)",
+            "Item exchange (customer arranges their own return + free outbound shipping)",
+            "Refund (customer arranges their own return)",
+            "Alteration subsidy: 10% refund + $20 gift voucher"
         ]
-    elif has_discount:
-        return "ELIGIBLE", [
-            "Store credit (-$20 USD label)",
-            "Item exchange (-$20 USD label)",
-            "Alteration subsidy: 10% refund + $20 USD gift voucher",
-            "Discretionary Refunds: We reserve the right to approve a refund outside of our standard policy if, in our judgment, it is appropriate to do so."
-        ]
-    else:
-        return "ELIGIBLE", [
-            "120% store credit + free returns",
-            "Item exchange (-$20 USD label)",
-            "Refund (-$30 USD label)",
-            "Alteration subsidy: 10% refund + $20 USD gift voucher"
-        ]
+    )
 
 
 def process_order_items(order, statuses, order_count):
     results = []
     fulfillments = order.get("fulfillments", [])
     refunds = order.get("refunds", [])
+
+    payment_method=order.get("payment_gateway_names", [])
+    if "Klarna" in payment_method:
+        payment_method="Klarna"
+    elif "Afterpay" in payment_method:
+        payment_method="Afterpay"
+    elif "Sezzle" in payment_method:
+        payment_method="Sezzle"
+    elif "shopify_store_credit" in payment_method:
+        payment_method="Store Credits"
+    else:
+        payment_method='Normal'
+
+    country_code=order.get("shipping_address").get('country_code')
 
     for item in order['line_items']:
         # if  (item['fulfillment_status']!='fulfilled')&(item['current_quantity']>0):
@@ -158,7 +199,6 @@ def process_order_items(order, statuses, order_count):
             line_gross = (amount * qty)
             line_net = (float(line_gross) - float(line_discount))
             line_net= str(line_net)+' '+currency
-
 
 
             lookup = {j['name']: j['value'] for j in item['properties']}
@@ -210,17 +250,17 @@ def process_order_items(order, statuses, order_count):
             )
 
             # Eligibility logic
-            eligibility_status, return_options = get_eligibility(
-                is_final_sale, days_held, discount_percentage, has_discount, order_count
+            eligibility_status, eligibility_reason, return_options  = get_eligibility(
+                is_final_sale, days_held, discount_percentage, has_discount, order_count, payment_method, country_code
             )
 
-            return_code_map = {
-                "FINAL SALE": "RS-FINAL",
-                "EXPIRED": "RS-30",
-                "More than 20% off": "RS-DISCOUNT",
-                "ELIGIBLE": "RS-OK"
-            }
-            return_code = return_code_map.get(eligibility_status, "RS-UNK")
+            # return_code_map = {
+            #     "FINAL SALE": "RS-FINAL",
+            #     "EXPIRED": "RS-30",
+            #     "More than 20% off": "RS-DISCOUNT",
+            #     "ELIGIBLE": "RS-OK"
+            # }
+            # return_code = return_code_map.get(eligibility_status, "RS-UNK")
 
             return_label = "RETURNED" if was_returned else eligibility_status
 
@@ -236,8 +276,10 @@ def process_order_items(order, statuses, order_count):
                 "status": statuses.get(item_id, "Unknown"),
                 "was_returned": was_returned,
                 "return_label": return_label,
-                "return_code": return_code,
+                "payment_method": payment_method,
+                "country_code":country_code,
                 "eligibility_status": eligibility_status,
+                "eligibility_reason":eligibility_reason,
                 "return_options": return_options,
                 "days_held": days_held,
                 "actual_paid":actual_paid,
@@ -245,7 +287,6 @@ def process_order_items(order, statuses, order_count):
             })
 
     return results
-
 
 
 EMAIL_GUIDELINES="""
