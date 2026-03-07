@@ -444,8 +444,10 @@ Commonly used email templates
  
 Return – no reason given, full eligibility (when customer must arrange their own return shipping):
 
-Thank you for reaching out, and we're sorry to hear the Zulu Dress didn't work as you'd hoped.
+Thank you for reaching out, and we're sorry to hear that the (enter return item here) didn't work as you'd hoped.
+
 Before we proceed with the return, we'd love to understand what didn't work for you. If it's a sizing issue, we'd be happy to help you find the right size. Our concierge team can also suggest alternative styles that might work better for your shape and preferences.
+
 To move forward with the return, please let us know which option you'd like to proceed with, and we'll take care of the rest.
 
 
@@ -793,6 +795,5 @@ We're aware of the reviews on Trustpilot and understand your hesitation. We want
 We want to assure you that these reviews represent a small number of accounts, whereas we've had the privilege of serving hundreds of thousands of customers from around the world. We're an officially registered company in both Australia with branches in Europe, and we own our ateliers where we work with skilled artisans in Italy and Portugal for garment production, as well as with renowned linen suppliers in Belgium and the Netherlands.
 We're truly sorry that this situation has affected your confidence in us. If there's anything we can do to reassure you about our service, quality, craftsmanship, or designs, please don't hesitate to ask. I'd be more than happy to answer any questions you may have.
 We also offer a comprehensive return policy with multiple options, so you can shop with complete confidence.
-
 
 """
